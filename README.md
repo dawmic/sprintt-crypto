@@ -1,5 +1,5 @@
 # sprintt-crypto
-
+[LIVE DEMO](https://upbeat-neumann-5e29fa.netlify.app/)
 ## Project setup
 ```
 npm install
