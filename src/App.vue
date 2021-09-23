@@ -7,9 +7,20 @@
       </div>
       <img class="mockup-image" src="@/assets/Mockup.png" alt="mockup" />
     </div>
+    <TopMenu />
   </div>
 </template>
+<script>
+import TopMenu from '@/components/TopMenu.vue';
 
+export default {
+  name: 'App',
+  components: {TopMenu},
+  props: {
+   
+  }
+}
+</script>
 <style lang="scss">
 *,
 *::before,
@@ -27,6 +38,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   background-color: #1d1c28;
+  width: 100%;
+  height: 100vh;
 
   .desktop-container {
     height: 100vh;
