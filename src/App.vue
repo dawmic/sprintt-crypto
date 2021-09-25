@@ -7,19 +7,23 @@
       </div>
       <img class="mockup-image" src="@/assets/Mockup.png" alt="mockup" />
     </div>
-    <TopMenu />
+    <TopMenu :marketUp="marketUp" :market_change_24hr="market_change_24hr" />
   </div>
 </template>
 <script>
-import TopMenu from '@/components/TopMenu.vue';
+import TopMenu from "@/components/TopMenu.vue";
 
 export default {
-  name: 'App',
-  components: {TopMenu},
-  props: {
-   
-  }
-}
+  name: "App",
+  components: { TopMenu },
+  props: {},
+  data() {
+    return {
+      marketUp: true,
+      market_change_24hr: "+7.49%",
+    };
+  },
+};
 </script>
 <style lang="scss">
 *,
