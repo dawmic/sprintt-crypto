@@ -17,7 +17,6 @@
 const options = {
   headers: {
     "user-access-token": "90275ed9-b7f3-4061-a8b7-6d602bfef99c",
-  
   },
 };
 import TopMenu from "@/components/TopMenu.vue";
@@ -34,7 +33,10 @@ export default {
   },
   created() {
     axios
-      .get("https://api.sprintt.co/crypto/currencies/market_change", options)
+      .get(
+        "https://api.sprintt.co/crypto/currencies/market_change/n_coins=20",
+        options
+      )
       .then((response) => {
         console.log(response);
         this.market_change_24hr = response.data.market_change_24hr;
@@ -70,7 +72,6 @@ html {
   background-color: #1d1c28;
   width: 100%;
   height: 100vh;
-  
 
   .desktop-container {
     height: 100vh;
@@ -100,5 +101,4 @@ html {
     }
   }
 }
-
 </style>
