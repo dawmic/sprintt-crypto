@@ -7,9 +7,52 @@
       </div>
       <img class="mockup-image" src="@/assets/Mockup.png" alt="mockup" />
     </div>
+    <TopMenu :marketUp="marketUp" :market_change_24hr="market_change_24hr" />
+    <main>
+      <router-view />
+    </main>
   </div>
 </template>
-
+<script>
+const options = {
+  headers: {
+    "user-access-token": "90275ed9-b7f3-4061-a8b7-6d602bfef99c",
+  },
+};
+import TopMenu from "@/components/TopMenu.vue";
+import axios from "axios";
+export default {
+  name: "App",
+  components: { TopMenu },
+  props: {},
+  data() {
+    return {
+      marketUp: true,
+      market_change_24hr: null,
+    };
+  },
+  created() {
+    axios
+      .get(
+        "https://api.sprintt.co/crypto/currencies/market_change/n_coins=20",
+        options
+      )
+      .then((response) => {
+        console.log(response);
+        this.market_change_24hr = response.data.market_change_24hr;
+      });
+  },
+  watch: {
+    market_change_24hr: function (newMarketChange) {
+      if (newMarketChange.includes("-")) {
+        this.marketUp = false;
+      } else {
+        this.marketUp = true;
+      }
+    },
+  },
+};
+</script>
 <style lang="scss">
 *,
 *::before,
@@ -27,6 +70,8 @@ html {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   background-color: #1d1c28;
+  width: 100%;
+  height: 100vh;
 
   .desktop-container {
     height: 100vh;
@@ -53,19 +98,6 @@ html {
         margin-top: 1rem;
         line-height: 1.5;
       }
-    }
-  }
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
     }
   }
 }
