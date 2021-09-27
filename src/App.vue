@@ -34,7 +34,7 @@ export default {
   created() {
     axios
       .get(
-        "https://api.sprintt.co/crypto/currencies/market_change/n_coins=20",
+        "https://api.sprintt.co/crypto/currencies/market_change",
         options
       )
       .then((response) => {
