@@ -9,7 +9,10 @@
     </div>
     <TopMenu :marketUp="marketUp" :market_change_24hr="market_change_24hr" />
     <main>
-      <router-view />
+      <router-view
+        :all_data="allCurrencies"
+        :tracked_data="trackedCurrencies"
+      />
     </main>
   </div>
 </template>
@@ -27,20 +30,42 @@ export default {
   props: {},
   data() {
     return {
-      marketUp: true,
+      marketUp: null,
       market_change_24hr: null,
+      allCurrencies: "",
+      trackedCurrencies: "",
     };
   },
   created() {
     axios
-      .get(
-        "https://api.sprintt.co/crypto/currencies/market_change",
-        options
-      )
+      .get("https://api.sprintt.co/crypto/currencies/market_change", options)
       .then((response) => {
         console.log(response);
         this.market_change_24hr = response.data.market_change_24hr;
+      })
+      .catch(() => {
+        this.market_change_24hr = "Sorry, we have some problems.";
       });
+
+    axios
+      .get(
+        "https://api.sprintt.co/crypto/currencies/list?limit=20&offset=0",
+        options
+      )
+      .then((response) => {
+        this.allCurrencies = response.data.currencies_list;
+      })
+      .catch(() => (this.allCurrencies = "Empty list"));
+
+    axios
+      .get(
+        "https://api.sprintt.co/crypto/currencies/list?tracked_only=true&limit=100&offset=0",
+        options
+      )
+      .then((response) => {
+        this.trackedCurrencies = response.data.currencies_list;
+      })
+      .catch(() => (this.trackedCurrencies = "Empty list"));
   },
   watch: {
     market_change_24hr: function (newMarketChange) {
@@ -60,6 +85,7 @@ export default {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: "Roboto", sans-serif;
 }
 html {
   font-size: 62.5%;
@@ -71,7 +97,7 @@ html {
   text-align: center;
   background-color: #1d1c28;
   width: 100%;
-  height: 100vh;
+  height: 100%;
 
   .desktop-container {
     height: 100vh;

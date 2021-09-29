@@ -30,6 +30,7 @@ export default {
 
 <style lang="scss" scoped>
 .top-container {
+
   background-color: #2a283d;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   height: 22.3rem;
@@ -45,7 +46,6 @@ export default {
   .top-market-paragraph {
     font-size: 2.2rem;
     color: #d6d5da;
-    font-family: "Roboto", sans-serif;
   }
   .top-market-green-arrow,
   .top-market-red-arrow {
