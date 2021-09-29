@@ -8,7 +8,7 @@
       </div>
     </div>
     <div class="coin-data">
-      <p class="coin-price">{{ coinProp.price }}</p>
+      <p class="coin-price">${{ coinProp.price }}</p>
       <p v-if="coinProp.change_24h.includes('+')" class="coin-change courseUp">
         <img
           class="arrow-image"
@@ -57,7 +57,6 @@ export default {
     border-radius: 2rem;
     display: flex;
     color: #d6d5da;
-    font-family: "Roboto" sans-serif;
     font-size: 1.6rem;
   }
   .logo {
@@ -76,6 +75,7 @@ export default {
     justify-content: center;
     align-items: flex-end;
     margin-right: 1.5rem;
+
     .arrow-image {
       height: 0.7rem;
       width: 1.2rem;
