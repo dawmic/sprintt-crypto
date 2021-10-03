@@ -3,7 +3,11 @@
     <div class="logo">
       <img class="logo-image" :src="coinProp.image_url" :alt="coinProp.name" />
       <div>
-        <p class="coin-name">{{ coinProp.name }}</p>
+      <!-- <p class="coin-name">{{ coinProp.name }}</p> -->
+      <router-link
+      tag="p" class="coin-name"
+      :to="{ name: 'CurrencyDetails', params: { name: coinProp.name, coinProp } }"
+    > {{coinProp.name}} </router-link>
         <p class="coin-symbol">{{ coinProp.symbol }}</p>
       </div>
     </div>

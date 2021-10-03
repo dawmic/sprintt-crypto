@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import AllCurrencies from '@/components/AllCurrencies.vue'
 import TrackedCurrencies from '@/components/TrackedCurrencies.vue'
+import CurrencyDetails from '@/components/CurrencyDetails.vue'
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,12 @@ const routes = [{
         path: '/TrackedCurrencies',
         name: 'TrackedCurrencies',
         component: TrackedCurrencies
+    },
+    {
+        path: '/CurrencyDetails/:name',
+        name: 'CurrencyDetails',
+        component: CurrencyDetails,
+        props: true,
     }
 ]
 

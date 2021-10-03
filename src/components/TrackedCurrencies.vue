@@ -12,12 +12,13 @@
 <script>
 import CryptoCoin from "@/components/CryptoCoin.vue";
 export default {
+  name: "TrackedCurrencies",
   components: { CryptoCoin },
   props: ["tracked_data"],
   computed: {
-    tracked_data_computed(){
-      return this.tracked_data
-    }
+    tracked_data_computed() {
+      return this.tracked_data;
+    },
   },
 };
 </script>
