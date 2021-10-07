@@ -1,6 +1,7 @@
 <template>
   <div class="top-container">
     <img class="top-logo" src="@/assets/logo.png" alt="top menu logo" />
+
     <p class="top-market-paragraph" v-if="marketUp">Market is up</p>
     <p class="top-market-paragraph" v-if="!marketUp">Market is down</p>
     <div class="top-market-green-arrow" v-if="marketUp">
@@ -13,24 +14,50 @@
         market_change_24hr
       }}</span>
     </div>
+    <!--
+    <p class="top-market-paragraph" v-if="marketUp">Market is up</p>
+    <p class="top-market-paragraph" v-if="!marketUp">Market is down</p>
+    <MarketStatus
+      :iconWidth="3.1"
+      :iconHeight="1.8"
+      :market_change_24hr="market_change_24hr"
+      :fontSize="2.4"
+      :margin="0.2"
+      :marginTop="-3"
+    />-->
     <div class="tabs-container">
       <router-link to="/" tag="button"> All Currencies </router-link>
       <router-link to="/TrackedCurrencies" tag="button">
-        TrackedCurrencies </router-link>
-      </div>
+        TrackedCurrencies
+      </router-link>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "TopMenu",
-  props: ["marketUp", "market_change_24hr"],
+  props: ["market_change_24hr"],
+  data() {
+    return {
+      marketUp: null,
+    };
+  },
+  watch: {
+    market_change_24hr: function (newMarketChange) {
+      if (parseFloat(newMarketChange) > 0) {
+        this.marketUp = true;
+        console.log(parseFloat(newMarketChange));
+      } else {
+        this.marketUp = false;
+      }
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .top-container {
-
   background-color: #2a283d;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   height: 22.3rem;
@@ -54,7 +81,6 @@ export default {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-
     img {
       height: 1.8rem;
       width: 3.1rem;

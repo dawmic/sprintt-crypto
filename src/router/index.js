@@ -18,7 +18,8 @@ const routes = [{
     {
         path: '/',
         name: 'AllCurrencies',
-        component: AllCurrencies
+        component: AllCurrencies,
+        props: true,
     },
     {
         path: '/TrackedCurrencies',

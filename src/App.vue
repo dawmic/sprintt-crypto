@@ -7,7 +7,7 @@
       </div>
       <img class="mockup-image" src="@/assets/Mockup.png" alt="mockup" />
     </div>
-    <TopMenu :marketUp="marketUp" :market_change_24hr="market_change_24hr" />
+    <TopMenu :market_change_24hr="market_change_24hr" />
     <main>
       <router-view
         :all_data="allCurrencies"
@@ -30,7 +30,6 @@ export default {
   props: {},
   data() {
     return {
-      marketUp: null,
       market_change_24hr: null,
       allCurrencies: "",
       trackedCurrencies: "",
@@ -67,7 +66,7 @@ export default {
       })
       .catch(() => (this.trackedCurrencies = "Empty list"));
   },
-  watch: {
+ /*watch: {
     market_change_24hr: function (newMarketChange) {
       if (newMarketChange.includes("-")) {
         this.marketUp = false;
@@ -75,7 +74,7 @@ export default {
         this.marketUp = true;
       }
     },
-  },
+  },*/
 };
 </script>
 <style lang="scss">
