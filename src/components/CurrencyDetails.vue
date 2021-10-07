@@ -34,6 +34,12 @@
         />
       </div>
     </div>
+    <button class="add-to-track-btn" v-if="coinDetail.is_tracked == 0">
+      Add to tracked currencies list
+    </button>
+    <button class="remove-from-track-btn" v-if="coinDetail.is_tracked == 1">
+      Remove from tracked currencies list
+    </button>
   </div>
 </template>
 
@@ -65,6 +71,7 @@ export default {
   height: 100vh;
   background-color: #1d1c28;
   overflow-y: scroll;
+
   .details-nav {
     height: 10rem;
     display: flex;
@@ -110,6 +117,22 @@ export default {
         color: #d6d5da;
       }
     }
+  }
+  .add-to-track-btn,
+  .remove-from-track-btn {
+    height: 4.7rem;
+    width: 33rem;
+    border: none;
+    border-radius: 5rem;
+    font-size: 1.6rem;
+    color: #fcfcfc;
+    background-color: transparent;
+  }
+  .add-to-track-btn {
+    background-color: #686cd6;
+  }
+  .remove-from-track-btn{
+    border: 2px solid #686cd6;
   }
 }
 </style>
