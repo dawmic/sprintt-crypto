@@ -34,10 +34,18 @@
         />
       </div>
     </div>
-    <button class="add-to-track-btn" v-if="coinDetail.is_tracked == 0">
+    <button
+      class="add-to-track-btn"
+      v-if="currenciesUnit[0].is_tracked == 0"
+      @click="addToTrack(coinDetail.currency_id)"
+    >
       Add to tracked currencies list
     </button>
-    <button class="remove-from-track-btn" v-if="coinDetail.is_tracked == 1">
+    <button
+      class="remove-from-track-btn"
+      v-if="currenciesUnit[0].is_tracked == 1"
+      @click="removeFromTrack(coinDetail.currency_id)"
+    >
       Remove from tracked currencies list
     </button>
   </div>
@@ -48,15 +56,27 @@ import MarketStatus from "@/components/MarketStatus.vue";
 export default {
   name: "CurrencyDetails",
   components: { MarketStatus },
-  props: ["CoinDetail"],
+  props: ["CoinDetail", "currencies"],
   methods: {
     goBack() {
       this.$router.go(-1);
+    },
+    addToTrack(currencyId) {
+      this.$emit("addToTrack", currencyId);
+      console.log(this.coinDetail.currency_id);
+    },
+    removeFromTrack(currencyId) {
+      this.$emit("removeFromTrack", currencyId);
     },
   },
   computed: {
     coinDetail() {
       return this.$attrs.coinProp;
+    },
+    currenciesUnit() {
+      return this.currencies.filter((x) => {
+        return x.currency_id == this.coinDetail.currency_id;
+      });
     },
   },
 };
@@ -131,7 +151,7 @@ export default {
   .add-to-track-btn {
     background-color: #686cd6;
   }
-  .remove-from-track-btn{
+  .remove-from-track-btn {
     border: 2px solid #686cd6;
   }
 }

@@ -12,6 +12,9 @@
       <router-view
         :all_data="allCurrencies"
         :tracked_data="trackedCurrencies"
+        @addToTrack="addToTrack"
+        @removeFromTrack="removeFromTrack"
+        :currencies="allCurrencies"
       />
     </main>
   </div>
@@ -36,37 +39,67 @@ export default {
     };
   },
   created() {
-    axios
-      .get("https://api.sprintt.co/crypto/currencies/market_change", options)
-      .then((response) => {
-        console.log(response);
-        this.market_change_24hr = response.data.market_change_24hr;
-      })
-      .catch(() => {
-        this.market_change_24hr = "Sorry, we have some problems.";
-      });
-
-    axios
-      .get(
-        "https://api.sprintt.co/crypto/currencies/list?limit=20&offset=0",
-        options
-      )
-      .then((response) => {
-        this.allCurrencies = response.data.currencies_list;
-      })
-      .catch(() => (this.allCurrencies = "Empty list"));
-
-    axios
-      .get(
-        "https://api.sprintt.co/crypto/currencies/list?tracked_only=true&limit=100&offset=0",
-        options
-      )
-      .then((response) => {
-        this.trackedCurrencies = response.data.currencies_list;
-      })
-      .catch(() => (this.trackedCurrencies = "Empty list"));
+    this.getMarketStatus();
+    this.getAllCurrencies();
+    this.getTrackedCurrencies();
   },
- /*watch: {
+  methods: {
+    getMarketStatus() {
+      axios
+        .get("https://api.sprintt.co/crypto/currencies/market_change", options)
+        .then((response) => {
+          console.log(response);
+          this.market_change_24hr = response.data.market_change_24hr;
+        })
+        .catch(() => {
+          this.market_change_24hr = "Sorry, we have some problems.";
+        });
+    },
+    getAllCurrencies() {
+      axios
+        .get(
+          "https://api.sprintt.co/crypto/currencies/list?limit=20&offset=0",
+          options
+        )
+        .then((response) => {
+          this.allCurrencies = response.data.currencies_list;
+        })
+        .catch(() => (this.allCurrencies = "Empty list"));
+    },
+    getTrackedCurrencies() {
+      axios
+        .get(
+          "https://api.sprintt.co/crypto/currencies/list?tracked_only=true&limit=100&offset=0",
+          options
+        )
+        .then((response) => {
+          this.trackedCurrencies = response.data.currencies_list;
+        })
+        .catch(() => (this.trackedCurrencies = "Empty list"));
+    },
+
+    addToTrack(currencyId) {
+      axios.post(
+        `https://api.sprintt.co/crypto/currencies/tracked_currencies/${currencyId}?status=true`,
+        null,
+        options
+      );
+      console.log("addToTrack");
+      this.getTrackedCurrencies();
+      this.getAllCurrencies();
+    },
+    removeFromTrack(currencyId) {
+      axios.post(
+        `https://api.sprintt.co/crypto/currencies/tracked_currencies/${currencyId}?status=false`,
+        null,
+        options
+      );
+      console.log('removeTrack');
+      this.getTrackedCurrencies();
+      this.getAllCurrencies();
+    },
+  },
+  /*watch: {
     market_change_24hr: function (newMarketChange) {
       if (newMarketChange.includes("-")) {
         this.marketUp = false;
