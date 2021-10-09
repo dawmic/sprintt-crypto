@@ -7,7 +7,10 @@
       </div>
       <img class="mockup-image" src="@/assets/Mockup.png" alt="mockup" />
     </div>
-    <TopMenu :market_change_24hr="market_change_24hr" />
+
+    <div class="mobile-container">
+    <TopMenu :marketUp="marketUp" :market_change_24hr="market_change_24hr" />
+
     <main>
       <router-view
         :all_data="allCurrencies"
@@ -17,6 +20,7 @@
         :currencies="allCurrencies"
       />
     </main>
+    </div>
   </div>
 </template>
 <script>
@@ -156,6 +160,11 @@ html {
         margin-top: 1rem;
         line-height: 1.5;
       }
+    }
+  }
+  .mobile-container{
+    @media (min-width: 769px){
+      display: none;
     }
   }
 }
