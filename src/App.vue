@@ -9,7 +9,7 @@
     </div>
 
     <div class="mobile-container">
-    <TopMenu :marketUp="marketUp" :market_change_24hr="market_change_24hr" />
+    <TopMenu :market_change_24hr="market_change_24hr" />
 
     <main>
       <router-view
