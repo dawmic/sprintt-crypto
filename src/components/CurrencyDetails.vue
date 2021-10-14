@@ -34,6 +34,11 @@
         />
       </div>
     </div>
+    <div class="history-button-container">
+      <button class="history-button">1 Day</button
+      ><button class="history-button">1 Month</button
+      ><button class="history-button">1 Year</button>
+    </div>
     <button
       class="add-to-track-btn"
       v-if="currenciesUnit[0].is_tracked == 0"
@@ -153,6 +158,18 @@ export default {
   }
   .remove-from-track-btn {
     border: 2px solid #686cd6;
+  }
+  .history-button-container {
+    .history-button {
+      width: 9.6rem;
+      height: 3.7rem;
+      border-radius: 4rem;
+      border: 1px solid #d6d5da;
+      background-color: #2b2f39;
+      font-size: 1.6rem;
+      color: #d6d5da;
+      margin: 1rem;
+    }
   }
 }
 </style>
