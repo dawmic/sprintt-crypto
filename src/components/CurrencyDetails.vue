@@ -34,11 +34,43 @@
         />
       </div>
     </div>
-    <div class="history-button-container">
-      <button class="history-button">1 Day</button
-      ><button class="history-button">1 Month</button
-      ><button class="history-button">1 Year</button>
+    <div class="history-button-container" v-if="day">
+      <label
+        class="history-button"
+        for="1day"
+        :class="{ 'active-button': chart_data == day }"
+        >1 Day<input
+          @click="klik"
+          type="radio"
+          id="1day"
+          name="history"
+          :value="day"
+          v-model="chart_data"
+      /></label>
+      <label
+        class="history-button"
+        for="1month"
+        :class="{ 'active-button': chart_data == month }"
+        >1 Month<input
+          type="radio"
+          id="1month"
+          name="history"
+          :value="month"
+          v-model="chart_data"
+      /></label>
+      <label
+        class="history-button"
+        for="1year"
+        :class="{ 'active-button': chart_data == year }"
+        >1 Year<input
+          type="radio"
+          id="1year"
+          name="history"
+          :value="year"
+          v-model="chart_data"
+      /></label>
     </div>
+    <!--<Chart :data="chart_data" :height="300" :width="300" />-->
     <button
       class="add-to-track-btn"
       v-if="currenciesUnit[0].is_tracked == 0"
@@ -57,11 +89,26 @@
 </template>
 
 <script>
+const options = {
+  headers: {
+    "user-access-token": "90275ed9-b7f3-4061-a8b7-6d602bfef99c",
+  },
+};
 import MarketStatus from "@/components/MarketStatus.vue";
+import axios from "axios";
+//import Chart from "@/components/Chart.vue";
 export default {
   name: "CurrencyDetails",
-  components: { MarketStatus },
+  components: { MarketStatus /*Chart*/ },
   props: ["CoinDetail", "currencies"],
+  data() {
+    return {
+      day: "",
+      month: "",
+      year: "",
+      chart_data: this.day,
+    };
+  },
   methods: {
     goBack() {
       this.$router.go(-1);
@@ -73,6 +120,42 @@ export default {
     removeFromTrack(currencyId) {
       this.$emit("removeFromTrack", currencyId);
     },
+    getDayHistory() {
+      axios
+        .get(
+          `https://api.sprintt.co/crypto/currencies/history/${this.coinDetail.currency_id}?time_scope=1D`,
+          options
+        )
+        .then((response) => {
+          console.log(response.data.quotes_data);
+          this.day = response.data.quotes_data;
+        });
+    },
+    getMonthHistory() {
+      axios
+        .get(
+          `https://api.sprintt.co/crypto/currencies/history/${this.coinDetail.currency_id}?time_scope=1M`,
+          options
+        )
+        .then((response) => {
+          console.log(response.data.quotes_data);
+          this.month = response.data.quotes_data;
+        });
+    },
+    getYearHistory() {
+      axios
+        .get(
+          `https://api.sprintt.co/crypto/currencies/history/${this.coinDetail.currency_id}?time_scope=1Y`,
+          options
+        )
+        .then((response) => {
+          console.log(response.data.quotes_data);
+          this.year = response.data.quotes_data;
+        });
+    },
+    klik() {
+      console.log("input click");
+    },
   },
   computed: {
     coinDetail() {
@@ -83,6 +166,11 @@ export default {
         return x.currency_id == this.coinDetail.currency_id;
       });
     },
+  },
+  mounted() {
+    this.getDayHistory();
+    this.getMonthHistory();
+    this.getYearHistory();
   },
 };
 </script>
@@ -160,16 +248,28 @@ export default {
     border: 2px solid #686cd6;
   }
   .history-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     .history-button {
       width: 9.6rem;
       height: 3.7rem;
       border-radius: 4rem;
-      border: 1px solid #d6d5da;
+      //border: 1px solid #d6d5da;
       background-color: #2b2f39;
       font-size: 1.6rem;
       color: #d6d5da;
       margin: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      input {
+        display: none;
+      }
     }
+  }
+  .active-button {
+    border: 1px solid #d6d5da;
   }
 }
 </style>
