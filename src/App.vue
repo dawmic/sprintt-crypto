@@ -9,17 +9,19 @@
     </div>
 
     <div class="mobile-container">
-    <TopMenu :market_change_24hr="market_change_24hr" />
+      <TopMenu :market_change_24hr="market_change_24hr" />
 
-    <main>
-      <router-view
-        :all_data="allCurrencies"
-        :tracked_data="trackedCurrencies"
-        @addToTrack="addToTrack"
-        @removeFromTrack="removeFromTrack"
-        :currencies="allCurrencies"
-      />
-    </main>
+      <main>
+        <transition name="fade" mode="out-in">
+          <router-view
+            :all_data="allCurrencies"
+            :tracked_data="trackedCurrencies"
+            @addToTrack="addToTrack"
+            @removeFromTrack="removeFromTrack"
+            :currencies="allCurrencies"
+          />
+        </transition>
+      </main>
     </div>
   </div>
 </template>
@@ -98,7 +100,7 @@ export default {
         null,
         options
       );
-      console.log('removeTrack');
+      console.log("removeTrack");
       this.getTrackedCurrencies();
       this.getAllCurrencies();
     },
@@ -125,6 +127,7 @@ export default {
 }
 html {
   font-size: 62.5%;
+  background-color: #1d1c28;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -162,10 +165,18 @@ html {
       }
     }
   }
-  .mobile-container{
-    @media (min-width: 769px){
+  .mobile-container {
+    @media (min-width: 769px) {
       display: none;
     }
   }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
