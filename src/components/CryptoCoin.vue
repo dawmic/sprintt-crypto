@@ -42,7 +42,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .coin-container {
-  height: 8.5rem;
+
   width: clamp(20rem, 90vw, 40rem);
   background-color: #2b2f39;
   border-radius: 2rem;
