@@ -40,7 +40,7 @@
         for="1day"
         :class="{ 'active-button': chart_data == day }"
         >1 Day<input
-          @click="klik"
+          @click="updateChartDay"
           type="radio"
           id="1day"
           name="history"
@@ -52,6 +52,7 @@
         for="1month"
         :class="{ 'active-button': chart_data == month }"
         >1 Month<input
+          @click="updateChartMonth"
           type="radio"
           id="1month"
           name="history"
@@ -63,6 +64,7 @@
         for="1year"
         :class="{ 'active-button': chart_data == year }"
         >1 Year<input
+          @click="updateChartYear"
           type="radio"
           id="1year"
           name="history"
@@ -70,7 +72,17 @@
           v-model="chart_data"
       /></label>
     </div>
-    <!--<Chart :data="chart_data" :height="300" :width="300" />-->
+    <p v-if="error" class="error-msg">We have some problem to get data.</p>
+
+    <div class="chart">
+      <apexchart
+        ref="cryptoChart"
+        width="100%"
+        type="line"
+        :options="chartOptions"
+        :series="series"
+      ></apexchart>
+    </div>
     <button
       class="add-to-track-btn"
       v-if="currenciesUnit[0].is_tracked == 0"
@@ -96,17 +108,35 @@ const options = {
 };
 import MarketStatus from "@/components/MarketStatus.vue";
 import axios from "axios";
-//import Chart from "@/components/Chart.vue";
+import VueApexCharts from "vue-apexcharts";
 export default {
   name: "CurrencyDetails",
-  components: { MarketStatus /*Chart*/ },
+  components: { MarketStatus, apexchart: VueApexCharts },
   props: ["CoinDetail", "currencies"],
   data() {
     return {
+      tablica: "",
       day: "",
       month: "",
       year: "",
-      chart_data: this.day,
+      chart_data: "",
+      error: false,
+      chartOptions: {
+       
+        chart: {
+          id: "vue",
+        },
+        xaxis: {
+          categories: [],
+        },
+        colors: ["#686cd6"],
+      },
+      series: [
+        {
+          name: "vue",
+          data: [],
+        },
+      ],
     };
   },
   methods: {
@@ -127,8 +157,13 @@ export default {
           options
         )
         .then((response) => {
-          console.log(response.data.quotes_data);
           this.day = response.data.quotes_data;
+          this.chart_data = response.data.quotes_data;
+          this.updateChartDay();
+        })
+        .catch((err) => {
+          console.log(err);
+          this.error = true;
         });
     },
     getMonthHistory() {
@@ -138,8 +173,11 @@ export default {
           options
         )
         .then((response) => {
-          console.log(response.data.quotes_data);
           this.month = response.data.quotes_data;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.error = true;
         });
     },
     getYearHistory() {
@@ -149,12 +187,49 @@ export default {
           options
         )
         .then((response) => {
-          console.log(response.data.quotes_data);
           this.year = response.data.quotes_data;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.error = true;
         });
     },
-    klik() {
-      console.log("input click");
+    updateChartDay() {
+      const dayPrice = [];
+      this.day.forEach((el) => dayPrice.push(el.price));
+
+      this.$refs.cryptoChart.updateOptions({
+        series: [
+          {
+            name: this.coinDetail.name,
+            data: dayPrice,
+          },
+        ],
+      });
+    },
+    updateChartMonth() {
+      const monthPrice = [];
+      this.month.forEach((el) => monthPrice.push(el.price + "$"));
+      this.$refs.cryptoChart.updateOptions({
+        series: [
+          {
+            name: this.coinDetail.name,
+            data: monthPrice,
+          },
+        ],
+      });
+    },
+    updateChartYear() {
+      const yearPrice = [];
+      this.year.forEach((el) => yearPrice.push(Math.round(el.price)));
+      this.$refs.cryptoChart.updateOptions({
+        series: [
+          {
+            name: this.coinDetail.name,
+            data: yearPrice,
+          },
+        ],
+      });
     },
   },
   computed: {
@@ -255,7 +330,6 @@ export default {
       width: 9.6rem;
       height: 3.7rem;
       border-radius: 4rem;
-      //border: 1px solid #d6d5da;
       background-color: #2b2f39;
       font-size: 1.6rem;
       color: #d6d5da;
@@ -270,6 +344,14 @@ export default {
   }
   .active-button {
     border: 1px solid #d6d5da;
+  }
+  .error-msg {
+    font-size: 2rem;
+    margin: 1.4rem;
+    color: red;
+  }
+  .chart {
+    margin: 1rem;
   }
 }
 </style>
