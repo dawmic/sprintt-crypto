@@ -2,7 +2,7 @@
   <div id="app">
     <div class="desktop-container">
       <div class="desktop-paragraphs-container">
-        <img class="logo-image" src="@/assets/logo.png" alt="logo" />
+        <img class="logo-image" src="@/assets/logo.png" alt="logo"/>
         <p class="desktop-paragraph">Please open the app from mobile device.</p>
       </div>
       <img class="mockup-image" src="@/assets/Mockup.png" alt="mockup" />
@@ -26,11 +26,7 @@
   </div>
 </template>
 <script>
-const options = {
-  headers: {
-    "user-access-token": "90275ed9-b7f3-4061-a8b7-6d602bfef99c",
-  },
-};
+import options from "../scripts/config.js";
 import TopMenu from "@/components/TopMenu.vue";
 import axios from "axios";
 export default {
@@ -45,6 +41,7 @@ export default {
     };
   },
   created() {
+    console.log(options);
     this.getMarketStatus();
     this.getAllCurrencies();
     this.getTrackedCurrencies();
@@ -54,7 +51,6 @@ export default {
       axios
         .get("https://api.sprintt.co/crypto/currencies/market_change", options)
         .then((response) => {
-          console.log(response);
           this.market_change_24hr = response.data.market_change_24hr;
         })
         .catch(() => {
@@ -63,12 +59,10 @@ export default {
     },
     getAllCurrencies() {
       axios
-        .get(
-          "https://api.sprintt.co/crypto/currencies/list?limit=20&offset=0",
-          options
-        )
+        .request(options)
         .then((response) => {
-          this.allCurrencies = response.data.currencies_list;
+          console.log(response.data.data.coins);
+          this.allCurrencies = response.data.data.coins;
         })
         .catch(() => (this.allCurrencies = "Empty list"));
     },
@@ -105,15 +99,6 @@ export default {
       this.getAllCurrencies();
     },
   },
-  /*watch: {
-    market_change_24hr: function (newMarketChange) {
-      if (newMarketChange.includes("-")) {
-        this.marketUp = false;
-      } else {
-        this.marketUp = true;
-      }
-    },
-  },*/
 };
 </script>
 <style lang="scss">
@@ -146,9 +131,12 @@ html {
 
     @media (min-width: 769px) {
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
+    }
+    @media (min-width: 100px){
+      flex-direction: row;
     }
 
     .desktop-paragraphs-container {
@@ -156,6 +144,7 @@ html {
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 2rem;
 
       .desktop-paragraph {
         font-size: 2.8rem;
@@ -173,7 +162,7 @@ html {
 }
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.3s;
+  transition: all 0.15s;
 }
 .fade-enter,
 .fade-leave-to {

@@ -24,65 +24,13 @@
         {{ coinDetail.name }} <span>{{ coinDetail.symbol }}</span>
       </p>
       <div class="details-price">
-        <p>${{ coinDetail.price }}</p>
-        <MarketStatus
-          :iconWidth="3.1"
-          :iconHeight="1.8"
-          :market_change_24hr="coinDetail.change_24h"
-          :fontSize="2.4"
-          :margin="1"
-        />
+        <p>${{ coinRoundedPrice }}</p>
       </div>
     </div>
-    <div class="history-button-container" v-if="day">
-      <label
-        class="history-button"
-        for="1day"
-        :class="{ 'active-button': chart_data == day }"
-        >1 Day<input
-          @click="updateChartDay"
-          type="radio"
-          id="1day"
-          name="history"
-          :value="day"
-          v-model="chart_data"
-      /></label>
-      <label
-        class="history-button"
-        for="1month"
-        :class="{ 'active-button': chart_data == month }"
-        >1 Month<input
-          @click="updateChartMonth"
-          type="radio"
-          id="1month"
-          name="history"
-          :value="month"
-          v-model="chart_data"
-      /></label>
-      <label
-        class="history-button"
-        for="1year"
-        :class="{ 'active-button': chart_data == year }"
-        >1 Year<input
-          @click="updateChartYear"
-          type="radio"
-          id="1year"
-          name="history"
-          :value="year"
-          v-model="chart_data"
-      /></label>
-    </div>
+
     <p v-if="error" class="error-msg">We have some problem to get data.</p>
 
-    <div class="chart">
-      <apexchart
-        ref="cryptoChart"
-        width="100%"
-        type="line"
-        :options="chartOptions"
-        :series="series"
-      ></apexchart>
-    </div>
+    <div class="chart"></div>
     <button
       class="add-to-track-btn"
       v-if="currenciesUnit[0].is_tracked == 0"
@@ -101,42 +49,23 @@
 </template>
 
 <script>
-const options = {
+/*const options = {
+  params: { referenceCurrencyUuid: "yhjMzLPhuIDl", timePeriod: "24h" },
   headers: {
-    "user-access-token": "90275ed9-b7f3-4061-a8b7-6d602bfef99c",
+    "X-RapidAPI-Key": "d58acbbf3bmsh822655bf6211d92p1155f4jsn92439cd02b1c",
+    "X-RapidAPI-Host": "coinranking1.p.rapidapi.com",
   },
-};
-import MarketStatus from "@/components/MarketStatus.vue";
+}; */
+
 import axios from "axios";
-import VueApexCharts from "vue-apexcharts";
+import options from "../../scripts/config.js"
 export default {
   name: "CurrencyDetails",
-  components: { MarketStatus, apexchart: VueApexCharts },
-  props: ["CoinDetail", "currencies"],
+  props: ["currencies"],
   data() {
     return {
-      tablica: "",
-      day: "",
-      month: "",
-      year: "",
-      chart_data: "",
+      history_data: "",
       error: false,
-      chartOptions: {
-       
-        chart: {
-          id: "vue",
-        },
-        xaxis: {
-          categories: [],
-        },
-        colors: ["#686cd6"],
-      },
-      series: [
-        {
-          name: "vue",
-          data: [],
-        },
-      ],
     };
   },
   methods: {
@@ -150,91 +79,26 @@ export default {
     removeFromTrack(currencyId) {
       this.$emit("removeFromTrack", currencyId);
     },
-    getDayHistory() {
+    getHistoryData() {
       axios
         .get(
-          `https://api.sprintt.co/crypto/currencies/history/${this.coinDetail.currency_id}?time_scope=1D`,
+          `https://coinranking1.p.rapidapi.com/coin/${this.$attrs.coinProp.uuid}/history`,
           options
         )
         .then((response) => {
-          this.day = response.data.quotes_data;
-          this.chart_data = response.data.quotes_data;
-          this.updateChartDay();
+          console.log(response.data);
+          this.history_data = response.data.data.history;
         })
-        .catch((err) => {
-          console.log(err);
-          this.error = true;
-        });
-    },
-    getMonthHistory() {
-      axios
-        .get(
-          `https://api.sprintt.co/crypto/currencies/history/${this.coinDetail.currency_id}?time_scope=1M`,
-          options
-        )
-        .then((response) => {
-          this.month = response.data.quotes_data;
-        })
-        .catch((err) => {
-          console.log(err);
-          this.error = true;
-        });
-    },
-    getYearHistory() {
-      axios
-        .get(
-          `https://api.sprintt.co/crypto/currencies/history/${this.coinDetail.currency_id}?time_scope=1Y`,
-          options
-        )
-        .then((response) => {
-          this.year = response.data.quotes_data;
-        })
-        .catch((err) => {
-          console.log(err);
-          this.error = true;
-        });
-    },
-    updateChartDay() {
-      const dayPrice = [];
-      this.day.forEach((el) => dayPrice.push(el.price));
-
-      this.$refs.cryptoChart.updateOptions({
-        series: [
-          {
-            name: this.coinDetail.name,
-            data: dayPrice,
-          },
-        ],
-      });
-    },
-    updateChartMonth() {
-      const monthPrice = [];
-      this.month.forEach((el) => monthPrice.push(el.price + "$"));
-      this.$refs.cryptoChart.updateOptions({
-        series: [
-          {
-            name: this.coinDetail.name,
-            data: monthPrice,
-          },
-        ],
-      });
-    },
-    updateChartYear() {
-      const yearPrice = [];
-      this.year.forEach((el) => yearPrice.push(Math.round(el.price)));
-      this.$refs.cryptoChart.updateOptions({
-        series: [
-          {
-            name: this.coinDetail.name,
-            data: yearPrice,
-          },
-        ],
-      });
+        .catch((err) => console.log(err));
     },
   },
+
   computed: {
     coinDetail() {
       return this.$attrs.coinProp;
+    },
+    coinRoundedPrice() {
+      return parseFloat(this.$attrs.coinProp.price).toFixed(2);
     },
     currenciesUnit() {
       return this.currencies.filter((x) => {
@@ -243,9 +107,8 @@ export default {
     },
   },
   mounted() {
-    this.getDayHistory();
-    this.getMonthHistory();
-    this.getYearHistory();
+    this.getHistoryData();
+    this.getCryptoData();
   },
 };
 </script>
@@ -355,4 +218,3 @@ export default {
   }
 }
 </style>
-
