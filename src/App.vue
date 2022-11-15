@@ -2,10 +2,16 @@
   <div id="app">
     <div class="desktop-container">
       <div class="desktop-paragraphs-container">
-        <img class="logo-image" src="@/assets/logo.png" alt="logo"/>
+        <img class="logo-image" src="@/assets/logo.png" alt="logo" />
         <p class="desktop-paragraph">Please open the app from mobile device.</p>
       </div>
-      <img class="mockup-image" src="@/assets/Mockup.png" alt="mockup" />
+      <img
+        class="mockup-image"
+        src="@/assets/Mockup.png"
+        alt="mockup"
+        width="950"
+        height="550"
+      />
     </div>
 
     <div class="mobile-container">
@@ -26,79 +32,10 @@
   </div>
 </template>
 <script>
-import options from "../scripts/config.js";
 import TopMenu from "@/components/TopMenu.vue";
-import axios from "axios";
 export default {
   name: "App",
   components: { TopMenu },
-  props: {},
-  data() {
-    return {
-      market_change_24hr: null,
-      allCurrencies: "",
-      trackedCurrencies: "",
-    };
-  },
-  created() {
-    console.log(options);
-    this.getMarketStatus();
-    this.getAllCurrencies();
-    this.getTrackedCurrencies();
-  },
-  methods: {
-    getMarketStatus() {
-      axios
-        .get("https://api.sprintt.co/crypto/currencies/market_change", options)
-        .then((response) => {
-          this.market_change_24hr = response.data.market_change_24hr;
-        })
-        .catch(() => {
-          this.market_change_24hr = "Sorry, we have some problems.";
-        });
-    },
-    getAllCurrencies() {
-      axios
-        .request(options)
-        .then((response) => {
-          console.log(response.data.data.coins);
-          this.allCurrencies = response.data.data.coins;
-        })
-        .catch(() => (this.allCurrencies = "Empty list"));
-    },
-    getTrackedCurrencies() {
-      axios
-        .get(
-          "https://api.sprintt.co/crypto/currencies/list?tracked_only=true&limit=100&offset=0",
-          options
-        )
-        .then((response) => {
-          this.trackedCurrencies = response.data.currencies_list;
-        })
-        .catch(() => (this.trackedCurrencies = "Empty list"));
-    },
-
-    addToTrack(currencyId) {
-      axios.post(
-        `https://api.sprintt.co/crypto/currencies/tracked_currencies/${currencyId}?status=true`,
-        null,
-        options
-      );
-      console.log("addToTrack");
-      this.getTrackedCurrencies();
-      this.getAllCurrencies();
-    },
-    removeFromTrack(currencyId) {
-      axios.post(
-        `https://api.sprintt.co/crypto/currencies/tracked_currencies/${currencyId}?status=false`,
-        null,
-        options
-      );
-      console.log("removeTrack");
-      this.getTrackedCurrencies();
-      this.getAllCurrencies();
-    },
-  },
 };
 </script>
 <style lang="scss">
@@ -129,13 +66,13 @@ html {
     margin: 0 auto;
     display: none;
 
-    @media (min-width: 769px) {
+    @media (min-width: 992px) {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-    @media (min-width: 100px){
+    @media (min-width: 100px) {
       flex-direction: row;
     }
 
@@ -155,7 +92,7 @@ html {
     }
   }
   .mobile-container {
-    @media (min-width: 769px) {
+    @media (min-width: 992px) {
       display: none;
     }
   }
