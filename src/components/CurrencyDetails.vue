@@ -29,9 +29,16 @@
     </div>
 
     <p v-if="error" class="error-msg">We have some problem to get data.</p>
-
-    <div class="chart"></div>
-    <button
+    <TimePeriodSwitcher :timePeriod='tp' @updateChart="getHistoryData($event)" />
+    <div class="chart">
+      <Chart
+        :chart_data="chart_data"
+        :chart_options="chart_options"
+        :width_bar="width_bar"
+        :height_bar="height_bar"
+      />
+    </div>
+    <!-- <button
       class="add-to-track-btn"
       v-if="currenciesUnit[0].is_tracked == 0"
       @click="addToTrack(coinDetail.currency_id)"
@@ -44,28 +51,50 @@
       @click="removeFromTrack(coinDetail.currency_id)"
     >
       Remove from tracked currencies list
-    </button>
+    </button> -->
   </div>
 </template>
 
 <script>
-/*const options = {
-  params: { referenceCurrencyUuid: "yhjMzLPhuIDl", timePeriod: "24h" },
-  headers: {
-    "X-RapidAPI-Key": "d58acbbf3bmsh822655bf6211d92p1155f4jsn92439cd02b1c",
-    "X-RapidAPI-Host": "coinranking1.p.rapidapi.com",
-  },
-}; */
-
 import axios from "axios";
-import options from "../../scripts/config.js"
+//import options from "../../scripts/options.js";
+import Chart from "./Chart.vue";
+import headers from "../../scripts/config";
+import TimePeriodSwitcher from "./TimePeriodSwitcher.vue";
+
 export default {
   name: "CurrencyDetails",
   props: ["currencies"],
+  components: { Chart, TimePeriodSwitcher },
   data() {
     return {
       history_data: "",
+      chart_data: {
+        labels: [],
+        datasets: [
+          {
+            label: `USD ${this.$attrs.coinProp.name}`,
+            backgroundColor: `${this.$attrs.coinProp.color}`,
+            data: [],
+          },
+        ],
+      },
+      chart_options: {
+        scales: {
+          y: {
+            //  display: false // Hide Y axis labels
+          },
+          x: {
+            display: false, // Hide X axis labels,
+            // max: 48,
+            ticks: {
+              autoSkip: true,
+            },
+          },
+        },
+      },
       error: false,
+      tp: '',
     };
   },
   methods: {
@@ -79,17 +108,68 @@ export default {
     removeFromTrack(currencyId) {
       this.$emit("removeFromTrack", currencyId);
     },
-    getHistoryData() {
+    getHistoryData(time_period) {
+      const options = {
+        method: "GET",
+        url: "https://coinranking1.p.rapidapi.com/coins",
+        params: {
+          referenceCurrencyUuid: "yhjMzLPhuIDl",
+          timePeriod: time_period,
+          "tiers[0]": "1",
+          orderBy: "marketCap",
+          orderDirection: "desc",
+          limit: "50",
+          offset: "0",
+        },
+        headers: headers,
+      };
+      this.tp = options.params.timePeriod;
       axios
         .get(
           `https://coinranking1.p.rapidapi.com/coin/${this.$attrs.coinProp.uuid}/history`,
           options
         )
         .then((response) => {
-          console.log(response.data);
+          this.chart_data.datasets[0].data = []; //reset chart data
+          this.chart_data.labels = []; // reset chart data
           this.history_data = response.data.data.history;
+          console.log(this.history_data.slice(0, 50));
+          const cut_history_data = response.data.data.history.reverse();
+          /*  response.data.data.history.forEach((el) =>
+            this.chart_data.datasets[0].data.push(
+              parseFloat(el.price).toFixed(2)
+            )
+          );
+          response.data.data.history.forEach((el) =>{
+           this.chart_data.labels.push(this.crypto_date(el.timestamp));
+        
+          }*/
+          cut_history_data.forEach((el) => {
+            this.chart_data.datasets[0].data.push(
+              parseFloat(el.price).toFixed(2)
+            );
+            this.chart_data.labels.push(this.crypto_date(el.timestamp));
+          });
         })
         .catch((err) => console.log(err));
+        console.log('trigger func');
+    },
+    crypto_date(timestamp) {
+      const u = new Date(timestamp * 1000);
+
+      return (
+        u.getUTCFullYear() +
+        "-" +
+        ("0" + u.getUTCMonth()).slice(-2) +
+        "-" +
+        ("0" + u.getUTCDate()).slice(-2) +
+        " " +
+        ("0" + u.getUTCHours()).slice(-2) +
+        ":" +
+        ("0" + u.getUTCMinutes()).slice(-2) +
+        ":" +
+        ("0" + u.getUTCSeconds()).slice(-2)
+      );
     },
   },
 
@@ -100,15 +180,15 @@ export default {
     coinRoundedPrice() {
       return parseFloat(this.$attrs.coinProp.price).toFixed(2);
     },
-    currenciesUnit() {
-      return this.currencies.filter((x) => {
-        return x.currency_id == this.coinDetail.currency_id;
-      });
+    height_bar() {
+      return Number(60);
+    },
+    width_bar() {
+      return Number(90);
     },
   },
   mounted() {
-    this.getHistoryData();
-    this.getCryptoData();
+    this.getHistoryData("7d");
   },
 };
 </script>
@@ -184,29 +264,6 @@ export default {
   }
   .remove-from-track-btn {
     border: 2px solid #686cd6;
-  }
-  .history-button-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    .history-button {
-      width: 9.6rem;
-      height: 3.7rem;
-      border-radius: 4rem;
-      background-color: #2b2f39;
-      font-size: 1.6rem;
-      color: #d6d5da;
-      margin: 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      input {
-        display: none;
-      }
-    }
-  }
-  .active-button {
-    border: 1px solid #d6d5da;
   }
   .error-msg {
     font-size: 2rem;

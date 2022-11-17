@@ -10,8 +10,10 @@
     <div class="coin-container">
       <div class="logo">
         <img
+        width="50"
+        height="50"
           class="logo-image"
-          :src="coinProp.image_url"
+          :src="coinProp.iconUrl"
           :alt="coinProp.name"
         />
         <div>
@@ -20,11 +22,11 @@
         </div>
       </div>
       <div class="coin-data">
-        <p class="coin-price">${{ coinProp.price }}</p>
+        <p class="coin-price">${{ roundedPrice }}</p>
         <MarketStatus
           :iconWidth="1.2"
           :iconHeight="0.7"
-          :market_change_24hr="coinProp.change_24h"
+          :market_change_24hr="coinProp.change"
           :fontSize="1.0"
           :margin="0.2"
         />
@@ -38,6 +40,11 @@ export default {
   name: "CryptoCoin",
   components: { MarketStatus },
   props: ["coinProp"],
+  computed: {
+    roundedPrice(){
+      return parseFloat(this.coinProp.price).toFixed(2);
+    }
+  }
 };
 </script>
 <style lang="scss" scoped>
@@ -46,9 +53,13 @@ export default {
   width: clamp(20rem, 90vw, 40rem);
   background-color: #2b2f39;
   border-radius: 2rem;
-  margin: 1rem;
+  margin: 1.5rem 1rem 0 1rem;
+  
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
   .logo,
   .coin-data {
     height: 100%;
@@ -65,7 +76,7 @@ export default {
     justify-content: flex-start;
     align-items: center;
     .logo-image {
-      margin: 1.5rem;
+      margin: 0rem 1rem 1.5rem 1.5rem;
     }
     .coin-name {
       font-size: 1.6rem;

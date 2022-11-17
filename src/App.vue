@@ -15,17 +15,11 @@
     </div>
 
     <div class="mobile-container">
-      <TopMenu :market_change_24hr="market_change_24hr" />
+      <TopMenu />
 
       <main>
         <transition name="fade" mode="out-in">
-          <router-view
-            :all_data="allCurrencies"
-            :tracked_data="trackedCurrencies"
-            @addToTrack="addToTrack"
-            @removeFromTrack="removeFromTrack"
-            :currencies="allCurrencies"
-          />
+          <router-view />
         </transition>
       </main>
     </div>
