@@ -1,57 +1,53 @@
 <template>
   <div class="top-container">
     <img class="top-logo" src="@/assets/logo.png" alt="top menu logo" />
+    <div class="top-market-info">
+      <span class="top-market-desc">Total Market Cap</span>
+      {{ formatVolume(totalMarketCap) }}
+    </div>
 
-    <p class="top-market-paragraph" v-if="marketUp">Market is up</p>
-    <p class="top-market-paragraph" v-if="!marketUp">Market is down</p>
-    <div class="top-market-green-arrow" v-if="marketUp">
-      <img src="@/assets/green_arrow.png" alt="green arrow" /><span>{{
-        market_change_24hr
-      }}</span>
-    </div>
-    <div class="top-market-red-arrow" v-if="!marketUp">
-      <img src="@/assets/red_arrow.png" alt="red arrow" /><span>{{
-        market_change_24hr
-      }}</span>
-    </div>
-    <!--
-    <p class="top-market-paragraph" v-if="marketUp">Market is up</p>
-    <p class="top-market-paragraph" v-if="!marketUp">Market is down</p>
-    <MarketStatus
-      :iconWidth="3.1"
-      :iconHeight="1.8"
-      :market_change_24hr="market_change_24hr"
-      :fontSize="2.4"
-      :margin="0.2"
-      :marginTop="-3"
-    />-->
     <div class="tabs-container">
       <router-link to="/" tag="button"> All Currencies </router-link>
       <router-link to="/TrackedCurrencies" tag="button">
-        TrackedCurrencies
+        Tracked Currencies
       </router-link>
     </div>
   </div>
 </template>
 
 <script>
+import headers from "../../scripts/config.js";
+import axios from "axios";
+const options = {
+  method: "GET",
+  url: "https://coinranking1.p.rapidapi.com/stats",
+  params: { referenceCurrencyUuid: "yhjMzLPhuIDl" },
+  headers: headers,
+};
 export default {
   name: "TopMenu",
-  props: ["market_change_24hr"],
   data() {
     return {
-      marketUp: null,
+      totalMarketCap: "0",
     };
   },
-  watch: {
-    market_change_24hr: function (newMarketChange) {
-      if (parseFloat(newMarketChange) > 0) {
-        this.marketUp = true;
-        console.log(parseFloat(newMarketChange));
-      } else {
-        this.marketUp = false;
-      }
+  methods: {
+    formatVolume(val) {
+      const formatValue = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+      return formatValue.format(val);
     },
+  },
+  mounted() {
+    axios
+      .request(options)
+      .then((response) => {
+        const { totalMarketCap } = response.data.data;
+        this.totalMarketCap = totalMarketCap;
+      })
+      .catch((err) => console.log(err));
   },
 };
 </script>
@@ -68,11 +64,14 @@ export default {
   align-items: center;
   .top-logo {
     height: 1.9rem;
-    margin-top: 4rem;
+    margin-top: 3rem;
   }
-  .top-market-paragraph {
+  .top-market-info {
     font-size: 2.2rem;
     color: #d6d5da;
+    .top-market-desc {
+      font-size: 1.8rem;
+    }
   }
   .top-market-green-arrow,
   .top-market-red-arrow {
