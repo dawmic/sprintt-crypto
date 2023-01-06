@@ -29,7 +29,10 @@
     </div>
 
     <p v-if="error" class="error-msg">We have some problem to get data.</p>
-    <TimePeriodSwitcher :timePeriod='tp' @updateChart="getHistoryData($event)" />
+    <TimePeriodSwitcher
+      :timePeriod="tp"
+      @updateChart="getHistoryData($event)"
+    />
     <div class="chart">
       <Chart
         :chart_data="chart_data"
@@ -38,34 +41,21 @@
         :height_bar="height_bar"
       />
     </div>
-    <!-- <button
-      class="add-to-track-btn"
-      v-if="currenciesUnit[0].is_tracked == 0"
-      @click="addToTrack(coinDetail.currency_id)"
-    >
-      Add to tracked currencies list
-    </button>
-    <button
-      class="remove-from-track-btn"
-      v-if="currenciesUnit[0].is_tracked == 1"
-      @click="removeFromTrack(coinDetail.currency_id)"
-    >
-      Remove from tracked currencies list
-    </button> -->
+    <TrackingButton  :crypto="coinDetail" />
   </div>
 </template>
 
 <script>
 import axios from "axios";
-//import options from "../../scripts/options.js";
 import Chart from "./Chart.vue";
-import headers from "../../scripts/config";
+import headers from "../../scripts/config.js";
 import TimePeriodSwitcher from "./TimePeriodSwitcher.vue";
+import TrackingButton from "./TrackingButton.vue";
 
 export default {
   name: "CurrencyDetails",
   props: ["currencies"],
-  components: { Chart, TimePeriodSwitcher },
+  components: { Chart, TimePeriodSwitcher, TrackingButton },
   data() {
     return {
       history_data: "",
@@ -94,7 +84,7 @@ export default {
         },
       },
       error: false,
-      tp: '',
+      tp: "",
     };
   },
   methods: {
@@ -114,7 +104,7 @@ export default {
         url: "https://coinranking1.p.rapidapi.com/coins",
         params: {
           referenceCurrencyUuid: "yhjMzLPhuIDl",
-          timePeriod: time_period,
+          timePeriod: time_period.trim(),
           "tiers[0]": "1",
           orderBy: "marketCap",
           orderDirection: "desc",
@@ -123,27 +113,17 @@ export default {
         },
         headers: headers,
       };
-      this.tp = options.params.timePeriod;
+      this.tp = options.params.timePeriod.trim();
       axios
         .get(
           `https://coinranking1.p.rapidapi.com/coin/${this.$attrs.coinProp.uuid}/history`,
           options
         )
         .then((response) => {
-          this.chart_data.datasets[0].data = []; //reset chart data
-          this.chart_data.labels = []; // reset chart data
+          this.chart_data.datasets[0].data = []; //reset chart data//////
+          this.chart_data.labels = []; //////////////////////////////
           this.history_data = response.data.data.history;
-          console.log(this.history_data.slice(0, 50));
           const cut_history_data = response.data.data.history.reverse();
-          /*  response.data.data.history.forEach((el) =>
-            this.chart_data.datasets[0].data.push(
-              parseFloat(el.price).toFixed(2)
-            )
-          );
-          response.data.data.history.forEach((el) =>{
-           this.chart_data.labels.push(this.crypto_date(el.timestamp));
-        
-          }*/
           cut_history_data.forEach((el) => {
             this.chart_data.datasets[0].data.push(
               parseFloat(el.price).toFixed(2)
@@ -152,7 +132,6 @@ export default {
           });
         })
         .catch((err) => console.log(err));
-        console.log('trigger func');
     },
     crypto_date(timestamp) {
       const u = new Date(timestamp * 1000);
@@ -248,22 +227,6 @@ export default {
         color: #d6d5da;
       }
     }
-  }
-  .add-to-track-btn,
-  .remove-from-track-btn {
-    height: 4.7rem;
-    width: 33rem;
-    border: none;
-    border-radius: 5rem;
-    font-size: 1.6rem;
-    color: #fcfcfc;
-    background-color: transparent;
-  }
-  .add-to-track-btn {
-    background-color: #686cd6;
-  }
-  .remove-from-track-btn {
-    border: 2px solid #686cd6;
   }
   .error-msg {
     font-size: 2rem;

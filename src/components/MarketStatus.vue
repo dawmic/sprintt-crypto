@@ -1,6 +1,6 @@
 <template>
   <div class="market-container" :style="{ marginTop: marginTop + 'rem' }">
-    <div class="up-container" v-if="marketUp">
+    <div class="up-container" v-if="marketStatus >= 0">
       <img
         :style="{
           width: iconWidth + 'rem',
@@ -13,7 +13,7 @@
         market_change_24hr
       }}</span>
     </div>
-    <div class="down-container" v-if="!marketUp">
+    <div class="down-container" v-if="marketStatus < 0">
       <img
         :style="{
           width: iconWidth + 'rem',
@@ -42,16 +42,14 @@ export default {
   ],
   data() {
     return {
-      marketUp: null,
+     
     };
   },
-  mounted() {
-    if (parseFloat(this.market_change_24hr) > 0) {
-      this.marketUp = true;
-    } else {
-      this.marketUp = false;
+  computed: {
+    marketStatus(){
+      return parseFloat(this.market_change_24hr)
     }
-  },
+  }
 };
 </script>
 
