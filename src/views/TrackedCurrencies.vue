@@ -1,23 +1,39 @@
 <template>
   <div class="tracked-container">
-    <CryptoCoin
-      v-for="coin in tracked_data_computed"
-      :key="coin.name"
-      :coinProp="coin"
-    />
-    <p v-if="tracked_data_computed.length == 0">The list is empty.</p>
+    <Loader v-if="loading" />
+    <CryptoCoin v-for="coin in tracked" :key="coin.name" :coinProp="coin" />
+    <p v-if="tracked.length < 1">You don't have favorite crypto yet.</p>
   </div>
 </template>
 
 <script>
 import CryptoCoin from "@/components/CryptoCoin.vue";
+import Loader from "@/components/Loader.vue";
+import axios from "axios";
+import options from "/scripts/options.js";
 export default {
   name: "TrackedCurrencies",
-  components: { CryptoCoin },
-  props: ["tracked_data"],
+  components: { CryptoCoin, Loader },
+  data() {
+    return {
+      loading: true,
+      crypto: [],
+    };
+  },
+  mounted() {
+    axios
+      .request(options)
+      .then((response) => {
+        this.crypto = response.data.data.coins;
+        this.loading = false;
+      })
+      .catch(() => (this.error = true));
+  },
   computed: {
-    tracked_data_computed() {
-      return this.tracked_data;
+    tracked() {
+      return this.crypto.filter((el) =>
+        JSON.parse(localStorage.getItem("tracked").includes(el.symbol))
+      );
     },
   },
 };
