@@ -20,7 +20,15 @@ export default {
       crypto: [],
     };
   },
+  methods: {
+    checkStorage() {
+      if (!localStorage.getItem("tracked")) {
+        localStorage.setItem("tracked", "[]");
+      }
+    },
+  },
   mounted() {
+    this.checkStorage();
     axios
       .request(options)
       .then((response) => {
