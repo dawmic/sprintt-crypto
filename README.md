@@ -13,7 +13,7 @@ Sprintt-crypto is kind of crypto tracker. It is list of most popular crypto wher
 
 ## Features
 
-- Pagination
+- Charts
 - Tracked list
 - Mobile
 
@@ -27,7 +27,7 @@ Sprintt-crypto is kind of crypto tracker. It is list of most popular crypto wher
 
 ## Documentation
 
-[Coinranking API used for get metadata on every coin listed.]https://developers.coinranking.com/api/documentation)
+[Coinranking API used for get metadata on every coin listed.](https://developers.coinranking.com/api/documentation)
 
 ## Feedback
 
